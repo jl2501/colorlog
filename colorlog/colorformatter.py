@@ -8,13 +8,9 @@ class LogColorMapping(UserDict):
         UserDict to support lookup for Log Level Names kaleidoscope.Color objects
         Current supporting 2 colors per level as a 2-tuple value for each named level key
     '''
-    def __init__(self, *args, **kwargs):
-        ''' 
-        Input:
-            *args, **kwargs: passed to super().__init__()
-        '''
-        super().__init__(*args, **kwargs)
-        self.data.update(
+    @classmethod
+    def get_default_colormap(cls):
+        return(
             {
                 'DEBUG'     : {'level_color': kaleidoscope.Color('bright lightcyan on lightblack'),
                                'message_color' : kaleidoscope.Color('bright lightcyan on black')},
@@ -33,8 +29,18 @@ class LogColorMapping(UserDict):
             }
         )
 
+    def __init__(self, *args, **kwargs):
+        ''' 
+        Input:
+            *args, **kwargs: passed to super().__init__()
+        '''
+        super().__init__(*args, **kwargs)
+        self.data.update(self.get_default_colormap())
+
     def __getitem__(self, item):
         return self.data[item]
+
+
 
 
 class ColorFormatter(logging.Formatter):
