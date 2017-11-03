@@ -1,7 +1,7 @@
 import logging
 from .colorformatter import ColorFormatter
 
-def getLogger(level=logging.DEBUG, *args, **kwargs):
+def getLogger(name=None, level=logging.DEBUG, **kwargs):
     '''
     Description:
         simple wrapper around logging.getLogger that creates a console handler and
@@ -10,7 +10,7 @@ def getLogger(level=logging.DEBUG, *args, **kwargs):
     Input:
         *args, **kwargs: passed directly to logging.getLogger() as is.
     '''
-    logger = logging.getLogger(*args, **kwargs)
+    logger = logging.getLogger(name, **kwargs)
     logger.setLevel(level)
     color_formatter = ColorFormatter()
     console_handler = logging.StreamHandler()
