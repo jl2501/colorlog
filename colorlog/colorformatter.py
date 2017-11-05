@@ -5,20 +5,20 @@ from collections import UserDict
 def get_default_colormap():
     return(
         {
-            'DEBUG'     : {'level_color': kaleidoscope.Color('bright lightcyan on lightblack'),
-                           'message_color' : kaleidoscope.Color('bright lightcyan on black')},
+            'DEBUG'     : [ kaleidoscope.Color('bright lightcyan on lightblack'),
+                            kaleidoscope.Color('bright lightcyan on black')],
 
-            'INFO'      : {'level_color': kaleidoscope.Color('bright black on lightblack'),
-                           'message_color': kaleidoscope.Color('bright lightblack on black')},
+            'INFO'      : [ kaleidoscope.Color('bright black on lightblack'),
+                            kaleidoscope.Color('bright lightblack on black')],
 
-            'WARNING'   : {'level_color': kaleidoscope.Color('bright black on lightyellow'),
-                           'message_color': kaleidoscope.Color('bright lightyellow on black')},
+            'WARNING'   : [ kaleidoscope.Color('bright black on lightyellow'),
+                            kaleidoscope.Color('bright lightyellow on black')],
 
-            'ERROR'     : {'level_color': kaleidoscope.Color('bright lightred on lightwhite'),
-                           'message_color': kaleidoscope.Color('bright lightred on black')},
+            'ERROR'     : [ kaleidoscope.Color('bright lightred on lightwhite'),
+                            kaleidoscope.Color('bright lightred on black')],
 
-            'CRITICAL'  : {'level_color': kaleidoscope.Color('bright lightwhite on lightred'),
-                           'message_color': kaleidoscope.Color('bright lightred on black')}
+            'CRITICAL'  : [ kaleidoscope.Color('bright lightwhite on lightred'),
+                            kaleidoscope.Color('bright lightred on black')]
         }
     )
 
@@ -47,8 +47,8 @@ class ColorFormatter(logging.Formatter):
             fmt, datefmt, style: passed to super().__init__() as is.
         '''
         if fmt is None:
-            fmt = ("%(level_color)s%(levelname)s:%(color_reset)s" +
-                   "%(message_color)s %(name)s: %(message)s %(color_reset)s")
+            fmt = ("%(color0)s%(levelname)s:%(color_reset)s" +
+                   "%(color1)s %(name)s: %(message)s %(color_reset)s")
         super().__init__(fmt=fmt, datefmt=datefmt, style=style)
 
         if colormap is None:
@@ -60,8 +60,11 @@ class ColorFormatter(logging.Formatter):
     def format(self, record):
         strlevel = logging.getLevelName(record.levelno)
         record.color_reset = kaleidoscope.Color.terminal_reset()
-        record.level_color = self.colormap[strlevel]['level_color'].terminal_codes()
-        record.message_color = self.colormap[strlevel]['message_color'].terminal_codes()
+        #- set color0..colorN attributes to be the terminal codes
+        for n, color_x in enumerate(self.colormap[strlevel]):
+            terminal_codes = self.colormap[strlevel][n].terminal_codes()
+            setattr(record, 'color{}'.format(str(n)), terminal_codes)
+        record.colors = self.colormap[strlevel]
         s = super().format(record)
         return s
 
