@@ -59,7 +59,8 @@ class ColorFormatter(logging.Formatter):
 
     def format(self, record):
         strlevel = logging.getLevelName(record.levelno)
-        record.color_reset = kaleidoscope.Color.terminal_reset()
+        record.color_reset = kaleidoscope.Color._terminal_reset
+
         #- set color0..colorN attributes to be the terminal codes
         for n, color_x in enumerate(self.colormap[strlevel]):
             terminal_codes = self.colormap[strlevel][n].terminal_codes()
